@@ -19,10 +19,13 @@ def get_model():
 def get_feature_representations(model, content_path, style_path):
     content_image = load_and_process_img(content_path)
     style_image = load_and_process_img(style_path)
+    
     content_outputs = model(content_image)
     style_outputs = model(style_image)
+    
     content_features = [content_layer for content_layer in content_outputs[:1]]
     style_features = [style_layer for style_layer in style_outputs[1:]]
+    
     return content_features, style_features
 
 def gram_matrix(input_tensor):
@@ -86,8 +89,21 @@ def style_transfer(content_path, style_path, num_iterations=1000, content_weight
     model, style_layers = get_model()
     for layer in model.layers:
         layer.trainable = False
+    
+    # Debugging statements
+    print(f"Model layers: {model.layers}")
+    
     content_features, style_features = get_feature_representations(model, content_path, style_path)
+    
+    # Debugging statements
+    print(f"Content features: {content_features}")
+    print(f"Style features: {style_features}")
+    
     gram_style_features = [gram_matrix(style_feature) for style_feature in style_features]
+    
+    # Debugging statements
+    print(f"Gram style features: {gram_style_features}")
+    
     init_image = load_and_process_img(content_path)
     init_image = tf.Variable(init_image, dtype=tf.float32)
     opt = tf.optimizers.Adam(learning_rate=5.0, beta_1=0.99, epsilon=1e-1)  # corrected learning rate to 5.0
@@ -115,7 +131,7 @@ def style_transfer(content_path, style_path, num_iterations=1000, content_weight
             best_loss = loss
             best_img = deprocess_img(init_image.numpy())
         if i % 100 == 0:
-            print('Iteration: {}'.format(i))        
+            print(f'Iteration: {i}, Loss: {loss}, Style Loss: {style_score}, Content Loss: {content_score}')        
     return best_img
 
 st.title("Neural Style Transfer with Streamlit")
