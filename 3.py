@@ -91,7 +91,7 @@ def style_transfer(content_path, style_path, num_iterations=1000, content_weight
     gram_style_features = [gram_matrix(style_feature) for style_feature in style_features]
     init_image = load_and_process_img(content_path)
     init_image = tf.Variable(init_image, dtype=tf.float32)
-    opt = tf.optimizers.Adam(learning_rate=5, beta_1=0.99, epsilon=1e-1)
+    opt = tf.optimizers.Adam(learning_rate=5.0, beta_1=0.99, epsilon=1e-1)  # corrected learning rate to 5.0
     iter_count = 1
     best_loss, best_img = float('inf'), None
     loss_weights = (content_weight, style_weight)
