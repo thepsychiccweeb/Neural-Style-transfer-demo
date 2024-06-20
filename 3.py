@@ -35,7 +35,7 @@ def gram_matrix(input_tensor):
     return result / num_locations
 
 def load_img(path_to_img):
-    max_dim = 512
+    max_dim = 256
     img = Image.open(path_to_img)
     long = max(img.size)
     scale = max_dim / long
@@ -85,7 +85,7 @@ def compute_grads(cfg):
     total_loss = all_loss[0]
     return tape.gradient(total_loss, cfg['init_image']), all_loss
 
-def style_transfer(content_path, style_path, num_iterations=1000, content_weight=1e3, style_weight=1e-2): 
+def style_transfer(content_path, style_path, num_iterations=100, content_weight=1e3, style_weight=1e-2): 
     model, style_layers = get_model()
     for layer in model.layers:
         layer.trainable = False
