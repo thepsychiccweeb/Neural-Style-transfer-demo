@@ -11,7 +11,7 @@ def get_model():
     content_outputs = [vgg.get_layer(name).output for name in content_layers]
     style_outputs = [vgg.get_layer(name).output for name in style_layers]
     model_outputs = content_outputs + style_outputs
-    return Model(vgg.input, model_outputs)
+    return Model(vgg.input, model_outputs), style_layers
 
 def get_feature_representations(model, content_path, style_path):
     content_image = load_and_process_img(content_path)
@@ -62,7 +62,7 @@ def deprocess_img(processed_img):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-def compute_loss(model, loss_weights, init_image, gram_style_features, content_features):
+def compute_loss(model, loss_weights, init_image, gram_style_features, content_features, style_layers):
     model_outputs = model(init_image)
     style_output_features = model_outputs[1:]
     content_output_features = model_outputs[:1]
@@ -84,7 +84,7 @@ def compute_grads(cfg):
     return tape.gradient(total_loss, cfg['init_image']), all_loss
 
 def style_transfer(content_path, style_path, num_iterations=1000, content_weight=1e3, style_weight=1e-2): 
-    model = get_model()
+    model, style_layers = get_model()
     for layer in model.layers:
         layer.trainable = False
     content_features, style_features = get_feature_representations(model, content_path, style_path)
@@ -100,7 +100,8 @@ def style_transfer(content_path, style_path, num_iterations=1000, content_weight
         'loss_weights': loss_weights,
         'init_image': init_image,
         'gram_style_features': gram_style_features,
-        'content_features': content_features
+        'content_features': content_features,
+        'style_layers': style_layers
     }
     norm_means = np.array([103.939, 116.779, 123.68])
     min_vals = -norm_means
