@@ -1,5 +1,5 @@
 import functools
-
+!pip install tensorflow
 import altair as alt
 import numpy as np
 import streamlit as st
