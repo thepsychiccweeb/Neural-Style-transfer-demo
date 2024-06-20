@@ -38,7 +38,7 @@ def load_img(path_to_img):
     img = Image.open(path_to_img)
     long = max(img.size)
     scale = max_dim / long
-    img = img.resize((round(img.size[0] * scale), round(img.size[1] * scale)), Image.ANTIALIAS)
+    img = img.resize((round(img.size[0] * scale), round(img.size[1] * scale)), Image.LANCZOS)
     img = np.array(img)
     img = np.expand_dims(img, axis=0)
     return img
